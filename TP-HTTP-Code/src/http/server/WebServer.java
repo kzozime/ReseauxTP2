@@ -88,6 +88,7 @@ public class WebServer {
       if(resource.exists()) {
         out.println("HTTP/1.0 200 OK");
         out.println("Content-Type: text/html");
+        out.println("Content-length: "+resource.length());
         out.println("Server: Bot");
         out.println("");
       }
