@@ -75,7 +75,7 @@ public class WebServer {
 
         if (url.isEmpty()) {
 	      System.out.println("page d'accueil");
-          //httpGet(out, INDEX);
+          httpGET(out, INDEX);
         }else if(url.startsWith(RESOURCE_DIRECTORY)){
             switch (methode) {
                 case "GET" :
@@ -104,7 +104,7 @@ public class WebServer {
                     break;
             }
         }else{
-            out.println(/*makeHeader*/"403 Forbidden");
+            out.println("403 Forbidden");
             out.flush();
         }
 
