@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\http",
+    "\\src\\http\\client",
+    "\\src\\http\\server"
+  ],
+  "SelectedNode": "\\src\\http\\client",
+  "PreviewInSolutionExplorer": false
+}
