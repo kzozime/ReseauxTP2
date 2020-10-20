@@ -133,8 +133,8 @@ public class WebServer {
       File resource = new File(filename);
       if(resource.exists()) {
         out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html; charset=UTF-8");
-        out.println("Content-length: " + resource.length());
+        out.println("Content-Type: text/html");
+        out.println("Content-length: "+resource.length());
         out.println("Server: Bot");
         out.println("");
       }
