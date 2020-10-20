@@ -79,15 +79,15 @@ public class WebServer {
         }else if(url.startsWith(RESOURCE_DIRECTORY)){
             switch (methode) {
                 case "GET" :
-                    //httpGet(out, url);
+                    httpGET(out, url);
                     System.out.println("get");
                     break;
                 case "POST":
-                    //httpPost(in, out, url);
+                    //httpPOST(in, out, url);
                     System.out.println("post");
                     break;
                 case "HEAD":
-                    //httpHead(in, out, url);
+                    //httpHEAD(in, out, url);
                     System.out.println("head");
                     break;
                 case "PUT":
@@ -95,7 +95,7 @@ public class WebServer {
                     System.out.println("put");
                     break;
                 case "DELETE":
-                    //httpDelete(out, url);
+                    //httpDELETE(out, url);
                     System.out.println("delete"); 
                     break;
                 default :
@@ -121,7 +121,7 @@ public class WebServer {
 //        out.println("<H1>Welcome to the Ultra Mini-WebServer</H1>");
 //        out.flush();
 //        remote.close();
-        httpGET(out, INDEX);
+       // httpGET(out, INDEX);
       } catch (Exception e) {
         System.out.println("Error: " + e);
       }
@@ -133,7 +133,8 @@ public class WebServer {
       File resource = new File(filename);
       if(resource.exists()) {
         out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html");
+        out.println("Content-Type: text/html; charset=UTF-8");
+        out.println("Content-length: " + resource.length());
         out.println("Server: Bot");
         out.println("");
       }
