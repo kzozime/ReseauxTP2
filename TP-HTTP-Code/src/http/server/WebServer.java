@@ -5,6 +5,7 @@ package http.server;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -111,19 +112,42 @@ public class WebServer {
 
         // Send the response
         // Send the headers
-        out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html");
-        out.println("Server: Bot");
+//        out.println("HTTP/1.0 200 OK");
+//        out.println("Content-Type: text/html");
+//        out.println("Server: Bot");
         // this blank line signals the end of the headers
-        out.println("");
+//        out.println("");
         // Send the HTML page
-        out.println("<H1>Welcome to the Ultra Mini-WebServer</H1>");
-        out.flush();
-        remote.close();
+//        out.println("<H1>Welcome to the Ultra Mini-WebServer</H1>");
+//        out.flush();
+//        remote.close();
+        httpGET(out, INDEX);
       } catch (Exception e) {
         System.out.println("Error: " + e);
       }
     }
+  }
+  //Methode GET implementation
+  protected void httpGET(PrintWriter out, String filename) {
+    System.out.println("GET " +filename);
+      File resource = new File(filename);
+      if(resource.exists()) {
+        out.println("HTTP/1.0 200 OK");
+        out.println("Content-Type: text/html");
+        out.println("Server: Bot");
+        out.println("");
+      }
+      try {
+        BufferedReader fileResponse = new BufferedReader(new FileReader(resource));
+        String line;
+        while((line = fileResponse.readLine()) != null) {
+         out.println(line);
+        }
+        fileResponse.close();
+      }catch (IOException e) {
+        System.out.println("Error : file can't be read");
+      }
+      out.flush();
   }
 
   /**
