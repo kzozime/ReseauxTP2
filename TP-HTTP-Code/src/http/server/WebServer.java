@@ -20,13 +20,20 @@ import java.net.Socket;
  */
 public class WebServer {
 
+    /**Chemin relatif du repertoire de ressources du serveur*/
+	protected static final String RESOURCE_DIRECTORY = "doc";
+	/**Chemin relatif de la page web e envoyer en cas d'erreur 404*/
+	protected static final String FILE_NOT_FOUND = "doc/notfound.html";
+	/**Chemin relatif de la page d'acceuil du serveur*/
+	protected static final String INDEX = "doc/index.html";
+
   /**
    * WebServer constructor.
    */
   protected void start() {
     ServerSocket s;
 
-    System.out.println("Webserver starting up on port 80");
+    System.out.println("Webserver starting up on port 3000");
     System.out.println("(press ctrl-c to exit)");
     try {
       // create the main server socket
@@ -51,11 +58,11 @@ public class WebServer {
         // stop reading once a blank line is hit. This
         // blank line signals the end of the client HTTP
         // headers.
-        String str = ".";
-        while (str != null && !str.equals("")) {
-          str = in.readLine();
-          System.out.println(str);
-          }
+        String headers = ".";
+        while (headers != null && !headers.equals("")){ //differencier les methodes
+          headers = in.readLine();
+          System.out.println(headers);
+         }
         // Send the response
         // Send the headers
         out.println("HTTP/1.0 200 OK");
@@ -72,8 +79,6 @@ public class WebServer {
       }
     }
   }
-
-
 
   /**
    * Start the application.
