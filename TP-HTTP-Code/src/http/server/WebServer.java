@@ -58,11 +58,57 @@ public class WebServer {
         // stop reading once a blank line is hit. This
         // blank line signals the end of the client HTTP
         // headers.
-        String headers = ".";
-        while (headers != null && !headers.equals("")){ //differencier les methodes
-          headers = in.readLine();
-          System.out.println(headers);
+        String headers = new String();
+        String str = ".";
+        while (str != null && !str.equals("")){ //differencier les methodes
+          str = in.readLine();
+          //System.out.println(str);
+          headers += str;
          }
+
+        String[] words = headers.split(" ");
+        String methode = words[0];
+        String url = words[1].substring(1);
+        System.out.println(methode);
+        System.out.println(url);
+
+        if (url.isEmpty()) {
+	      System.out.println("page d'accueil");
+          //httpGet(out, INDEX);
+        }else if(url.startsWith(RESOURCE_DIRECTORY)){
+            switch (methode) {
+                case "GET" :
+                    //httpGet(out, url);
+                    System.out.println("get");
+                    break;
+                case "POST":
+                    //httpPost(in, out, url);
+                    System.out.println("post");
+                    break;
+                case "HEAD":
+                    //httpHead(in, out, url);
+                    System.out.println("head");
+                    break;
+                case "PUT":
+                    //httpPUT(in, out, url);
+                    System.out.println("put");
+                    break;
+                case "DELETE":
+                    //httpDelete(out, url);
+                    System.out.println("delete"); 
+                    break;
+                default :
+                    out.println(/*makeHeader*/"501 Not Implemented");
+                    out.flush();
+                    break;
+            }
+        }else{
+            out.println(/*makeHeader*/"403 Forbidden");
+            out.flush();
+        }
+
+
+
         // Send the response
         // Send the headers
         out.println("HTTP/1.0 200 OK");
