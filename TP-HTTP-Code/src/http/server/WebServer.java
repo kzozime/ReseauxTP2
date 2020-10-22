@@ -50,6 +50,7 @@ public class WebServer {
         // wait for a connection
         Socket remote = s.accept();
         // remote is now the connected socket
+          System.out.println("__________________________________________");
         System.out.println("Connection, sending data.");
         BufferedReader in = new BufferedReader(new InputStreamReader(
             remote.getInputStream()));
@@ -83,11 +84,11 @@ public class WebServer {
                     System.out.println("get");
                     break;
                 case "POST":
-                    //httpPOST(in, out, url);
+                    httpPOST(in, out, url);
                     System.out.println("post");
                     break;
                 case "HEAD":
-                    //httpHEAD(in, out, url);
+                    httpHEAD(out, url);
                     System.out.println("head");
                     break;
                 case "PUT":
@@ -99,7 +100,7 @@ public class WebServer {
                     System.out.println("delete"); 
                     break;
                 default :
-                    out.println(/*makeHeader*/"501 Not Implemented");
+                    out.println("501 Not Implemented");
                     out.flush();
                     break;
             }
@@ -109,49 +110,215 @@ public class WebServer {
         }
 
 
-
-        // Send the response
-        // Send the headers
-//        out.println("HTTP/1.0 200 OK");
-//        out.println("Content-Type: text/html");
-//        out.println("Server: Bot");
-        // this blank line signals the end of the headers
-//        out.println("");
-        // Send the HTML page
-//        out.println("<H1>Welcome to the Ultra Mini-WebServer</H1>");
-//        out.flush();
-//        remote.close();
-       // httpGET(out, INDEX);
       } catch (Exception e) {
-        System.out.println("Error: " + e);
+          e.printStackTrace();
+
       }
     }
   }
   //Methode GET implementation
   protected void httpGET(PrintWriter out, String filename) {
-    System.out.println("GET " +filename);
-      File resource = new File(filename);
-      if(resource.exists()) {
-        out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html");
-        out.println("Content-length: "+resource.length());
-        out.println("Server: Bot");
-        out.println("");
-      }
-      try {
-        BufferedReader fileResponse = new BufferedReader(new FileReader(resource));
-        String line;
-        while((line = fileResponse.readLine()) != null) {
-         out.println(line);
-        }
-        fileResponse.close();
-      }catch (IOException e) {
-        System.out.println("Error : file can't be read");
-      }
-      out.flush();
+      System.out.println("GET " + filename);
+          File resource = new File(filename);
+          if (resource.exists()) {
+              out.println("HTTP/1.0 200 OK");
+              out.println(typeOfFile(filename));
+              out.println("Content-length: " + resource.length());
+              out.println("Server: Bot");
+              out.println("");
+          }else {
+              resource = new File(FILE_NOT_FOUND);
+              out.println("HTTP/1.0 404 Not Found");
+              out.println(typeOfFile(filename));
+              out.println("Content-length: " + resource.length());
+              out.println("Server: Bot");
+              out.println("");
+          }
+          try {
+              BufferedReader fileResponse = new BufferedReader(new FileReader(resource));
+              String line;
+              while ((line = fileResponse.readLine()) != null) {
+                  out.println(line);
+              }
+              fileResponse.close();
+          } catch (IOException e) {
+              System.out.println("Error : file can't be read");
+          }
+          out.flush();
   }
 
-  /**
+    protected void httpHEAD(PrintWriter out, String filename) {
+        System.out.println("HEAD " + filename);
+            File resource = new File(filename);
+            if (resource.exists()) {
+                out.println("HTTP/1.0 200 OK");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: " + resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            } else {
+                resource = new File(FILE_NOT_FOUND);
+                out.println("HTTP/1.0 404 Not Found");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: " + resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            }
+
+            out.flush();
+    }
+    protected void httpPOST(BufferedReader in, PrintWriter out, String filename) {
+        System.out.println("POST " + filename);
+            File resource = new File(filename);
+            boolean existed = resource.exists();
+//        BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(resource, existed));
+            try {
+                PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
+                String line;
+                try {
+                    while ((line = in.readLine()) != null) {
+                        fileOut.append(line + "\n");
+                    }
+                } catch (IOException e) {
+                    System.out.println("No : Data sent");
+                }
+
+                fileOut.flush();
+
+                fileOut.close();
+            } catch (FileNotFoundException e) {
+        System.out.println("Error : fichier introuvable");
+    }
+            if(existed) {
+                out.println("HTTP/1.0 200 OK");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            } else {
+                out.println("HTTP/1.0 201 Created");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            }
+            out.flush();
+
+    }
+
+    protected void httpPUT(BufferedReader in, PrintWriter out, String filename) {
+        System.out.println("PUT " + filename);
+            File resource = new File(filename);
+            boolean existed = resource.exists();
+            if(existed) {
+                resource.delete();
+            }
+            try {
+                resource.createNewFile();
+            }catch (IOException e) {
+                System.out.println("Error : during the process of creating FILE");
+            }
+            try {
+                PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
+
+                String line;
+                try {
+                    while ((line = in.readLine()) != null) {
+                        fileOut.append(line + "\n");
+                    }
+                } catch (IOException e) {
+                    System.out.println("No : Data sent");
+                }
+
+                fileOut.flush();
+
+                fileOut.close();
+            }catch (FileNotFoundException e) {
+                System.out.println("Error : fichier introuvable");
+            }
+
+
+            if(existed) {
+                out.println("HTTP/1.0 200 OK");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            } else {
+                out.println("HTTP/1.0 201 Created");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            }
+            out.flush();
+    }
+
+    protected void httpDELETE(PrintWriter out, String filename) {
+        System.out.println("DELETE " + filename);
+        try {
+            File resource = new File(filename);
+            boolean deleted = false;
+            boolean existed = false;
+            if((existed = resource.exists())) {
+                deleted = resource.delete();
+            }
+
+            if(deleted) {
+                out.println("HTTP/1.0 200 OK");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            } else if (!existed) {
+                out.println("HTTP/1.0 404 Not Found");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            } else {
+                out.println("HTTP/1.0 403 Forbideen");
+                out.println(typeOfFile(filename));
+                out.println("Content-length: "+resource.length());
+                out.println("Server: Bot");
+                out.println("");
+            }
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                out.println("HTTP/1.0 500 Internal Server Error");
+                out.println(typeOfFile(filename));
+                out.println("Server: Bot");
+                out.println("");
+                out.flush();
+            } catch (Exception e2) {};
+        }
+    }
+
+    protected String typeOfFile(String filename) {
+        String type="";
+        if(filename.endsWith(".html") || filename.endsWith(".htm"))
+            type= "Content-Type: text/html";
+        else if(filename.endsWith(".mp4"))
+            type= "Content-Type: video/mp4";
+        else if(filename.endsWith(".png"))
+            type= "Content-Type: image/png";
+        else if(filename.endsWith(".jpeg") || filename.endsWith(".jpg"))
+            type= "Content-Type: image/jpg";
+        else if(filename.endsWith(".mp3"))
+            type= "Content-Type: audio/mp3";
+        else if(filename.endsWith(".avi"))
+            type= "Content-Type: video/x-msvideo";
+        else if(filename.endsWith(".css"))
+            type= "Content-Type: text/css";
+        else if(filename.endsWith(".pdf"))
+            type= "Content-Type: application/pdf";
+        else if(filename.endsWith(".odt"))
+            type= "Content-Type: application/vnd.oasis.opendocument.text";
+        return type;
+    }
+    /**
    * Start the application.
    * 
    * @param args
