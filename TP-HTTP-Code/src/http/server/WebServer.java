@@ -31,121 +31,123 @@ public class WebServer {
   /**
    * WebServer constructor.
    */
-  protected void start() {
-    ServerSocket s;
+    protected void start() {
+        ServerSocket s;
 
-    System.out.println("Webserver starting up on port 3000");
-    System.out.println("(press ctrl-c to exit)");
-    try {
-      // create the main server socket
-      s = new ServerSocket(3000);
-    } catch (Exception e) {
-      System.out.println("Error: " + e);
-      return;
-    }
-
-    System.out.println("Waiting for connection");
-    for (;;) {
-      try {
-        // wait for a connection
-        Socket remote = s.accept();
-        // remote is now the connected socket
-          System.out.println("__________________________________________");
-        System.out.println("Connection, sending data.");
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-            remote.getInputStream()));
-        PrintWriter out = new PrintWriter(remote.getOutputStream());
-
-        // read the data sent. We basically ignore it,
-        // stop reading once a blank line is hit. This
-        // blank line signals the end of the client HTTP
-        // headers.
-        String headers = new String();
-        String str = ".";
-        while (str != null && !str.equals("")){ //differencier les methodes
-          str = in.readLine();
-          //System.out.println(str);
-          headers += str;
-         }
-
-        String[] words = headers.split(" ");
-        String methode = words[0];
-        String url = words[1].substring(1);
-        System.out.println(methode);
-        System.out.println(url);
-
-        if (url.isEmpty()) {
-	      System.out.println("page d'accueil");
-          httpGET(out, INDEX);
-        }else if(url.startsWith(RESOURCE_DIRECTORY)){
-            switch (methode) {
-                case "GET" :
-                    httpGET(out, url);
-                    System.out.println("get");
-                    break;
-                case "POST":
-                    httpPOST(in, out, url);
-                    System.out.println("post");
-                    break;
-                case "HEAD":
-                    httpHEAD(out, url);
-                    System.out.println("head");
-                    break;
-                case "PUT":
-                    httpPUT(in, out, url);
-                    System.out.println("put");
-                    break;
-                case "DELETE":
-                    httpDELETE(out, url);
-                    System.out.println("delete"); 
-                    break;
-                default :
-                    out.println("501 Not Implemented");
-                    out.flush();
-                    break;
-            }
-        }else{
-            out.println("403 Forbidden");
-            out.flush();
+        System.out.println("Webserver starting up on port 3000");
+        System.out.println("(press ctrl-c to exit)");
+        try {
+            // create the main server socket
+            s = new ServerSocket(3000);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return;
         }
 
+        System.out.println("Waiting for connection");
+        for (;;) {
+            try {
+            // wait for a connection
+            Socket remote = s.accept();
+            // remote is now the connected socket
+                System.out.println("__________________________________________");
+            System.out.println("Connection, sending data.");
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                remote.getInputStream()));
+            PrintWriter out = new PrintWriter(remote.getOutputStream());
 
-      } catch (Exception e) {
-          e.printStackTrace();
+            // read the data sent. We basically ignore it,
+            // stop reading once a blank line is hit. This
+            // blank line signals the end of the client HTTP
+            // headers.
+            String headers = new String();
+            String str = ".";
+            while (str != null && !str.equals("")){ //differencier les methodes
+                str = in.readLine();
+                //System.out.println(str);
+                headers += str;
+                }
 
-      }
+            String[] words = headers.split(" ");
+            String methode = words[0];
+            String url = words[1].substring(1);
+            System.out.println(methode);
+            System.out.println(url);
+
+            if (url.isEmpty()) {
+                System.out.println("page d'accueil");
+                httpGET(out, INDEX);
+            }else if(url.startsWith(RESOURCE_DIRECTORY)){
+                switch (methode) {
+                    case "GET" :
+                        httpGET(out, url);
+                        System.out.println("get");
+                        break;
+                    case "POST":
+                        httpPOST(in, out, url);
+                        System.out.println("post");
+                        break;
+                    case "HEAD":
+                        httpHEAD(out, url);
+                        System.out.println("head");
+                        break;
+                    case "PUT":
+                        httpPUT(in, out, url);
+                        System.out.println("put");
+                        break;
+                    case "DELETE":
+                        httpDELETE(out, url);
+                        System.out.println("delete"); 
+                        break;
+                    default :
+                        out.println("501 Not Implemented");
+                        out.flush();
+                        break;
+                }
+            }else{
+                out.println("403 Forbidden");
+                out.flush();
+            }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        }
     }
-  }
-  //Methode GET implementation
-  protected void httpGET(PrintWriter out, String filename) {
-      System.out.println("GET " + filename);
-          File resource = new File(filename);
-          if (resource.exists()) {
-              out.println("HTTP/1.0 200 OK");
-              out.println(typeOfFile(filename));
-              out.println("Content-length: " + resource.length());
-              out.println("Server: Bot");
-              out.println("");
-          }else {
-              resource = new File(FILE_NOT_FOUND);
-              out.println("HTTP/1.0 404 Not Found");
-              out.println(typeOfFile(filename));
-              out.println("Content-length: " + resource.length());
-              out.println("Server: Bot");
-              out.println("");
-          }
-          try {
-              BufferedReader fileResponse = new BufferedReader(new FileReader(resource));
-              String line;
-              while ((line = fileResponse.readLine()) != null) {
-                  out.println(line);
-              }
-              fileResponse.close();
-          } catch (IOException e) {
-              System.out.println("Error : file can't be read");
-          }
-          out.flush();
-  }
+    //Methode GET implementation
+    protected void httpGET(PrintWriter out, String filename) {
+        System.out.println("GET " + filename);
+        File resource = new File(filename);
+
+        if (resource.exists()) {
+            out.println("HTTP/1.0 200 OK");
+            out.println(typeOfFile(filename));
+            out.println("Content-length: " + resource.length());
+            out.println("Server: Bot");
+            out.println("");
+        }else {
+            resource = new File(FILE_NOT_FOUND);
+            out.println("HTTP/1.0 404 Not Found");
+            out.println(typeOfFile(filename));
+            out.println("Content-length: " + resource.length());
+            out.println("Server: Bot");
+            out.println("");
+        }
+
+        try {
+            BufferedReader fileResponse = new BufferedReader(new FileReader(resource));
+            String line;
+            while ((line = fileResponse.readLine()) != null) {
+                out.println(line);
+            }
+            fileResponse.close();
+        } catch (IOException e) {
+            System.out.println("Error : file can't be read");
+        }
+        out.flush();
+    }
 
     protected void httpHEAD(PrintWriter out, String filename) {
         System.out.println("HEAD " + filename);
@@ -167,6 +169,7 @@ public class WebServer {
 
             out.flush();
     }
+
     protected void httpPOST(BufferedReader in, PrintWriter out, String filename) {
         System.out.println("POST " + filename);
             File resource = new File(filename);
@@ -221,18 +224,8 @@ public class WebServer {
         }
         try {
             PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
-
-            // String line ;
-            // System.out.println("debut while");
-            // line= in.readLine();
-            // System.out.println(line);
-            // while (line != null) {
-            //     System.out.println("boucle");
-            //     fileOut.append(line + "\n");
-            //     line= in.readLine();
-            // }
             
-            //Lecture du body du
+            //Lecture du body
             char[] buffer = new char[256];
             while(in.ready()) {
                 int nbRead = in.read(buffer);
@@ -246,7 +239,6 @@ public class WebServer {
         }catch (IOException e) {
             System.out.println("No : Data sent");
         }
-
 
         if(existed) {
             out.println("HTTP/1.0 200 OK");
@@ -337,8 +329,8 @@ public class WebServer {
    * @param args
    *            Command line parameters are not used.
    */
-  public static void main(String args[]) {
+    public static void main(String args[]) {
     WebServer ws = new WebServer();
     ws.start();
-  }
+    }
 }
