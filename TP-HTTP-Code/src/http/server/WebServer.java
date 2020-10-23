@@ -173,23 +173,20 @@ public class WebServer {
             boolean existed = resource.exists();
             try {
                 PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
-                String line;
-                try {
-                    char[] buffer = new char[256];
-                    while(in.ready()) {
-                        int nbRead = in.read(buffer);
-                        fileOut.write(buffer, 0, nbRead);
-                    }
-
-                } catch (IOException e) {
-                    System.out.println("No : Data sent");
+                char[] buffer = new char[256];
+                while(in.ready()) {
+                    int nbRead = in.read(buffer);
+                    fileOut.write(buffer, 0, nbRead);
                 }
-                fileOut.flush();
 
+                fileOut.flush();
                 fileOut.close();
             } catch (FileNotFoundException e) {
                 System.out.println("Error : fichier introuvable");
+            } catch (IOException e2) {
+                System.out.println("No : Data sent");
             }
+
             if(existed) {
                 out.println("HTTP/1.0 200 OK");
                 out.println(typeOfFile(filename));
