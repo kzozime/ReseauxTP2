@@ -92,11 +92,11 @@ public class WebServer {
                     System.out.println("head");
                     break;
                 case "PUT":
-                    //httpPUT(in, out, url);
+                    httpPUT(in, out, url);
                     System.out.println("put");
                     break;
                 case "DELETE":
-                    //httpDELETE(out, url);
+                    httpDELETE(out, url);
                     System.out.println("delete"); 
                     break;
                 default :
@@ -171,12 +171,12 @@ public class WebServer {
         System.out.println("POST " + filename);
             File resource = new File(filename);
             boolean existed = resource.exists();
-//        BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(resource, existed));
             try {
                 PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
                 String line;
                 try {
                     while ((line = in.readLine()) != null) {
+                        System.out.println(line+ "\n");
                         fileOut.append(line + "\n");
                     }
                 } catch (IOException e) {
