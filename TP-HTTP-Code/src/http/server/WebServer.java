@@ -175,14 +175,15 @@ public class WebServer {
                 PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
                 String line;
                 try {
-                    while ((line = in.readLine()) != null) {
-                        System.out.println(line+ "\n");
-                        fileOut.append(line + "\n");
+                    char[] buffer = new char[256];
+                    while(in.ready()) {
+                        int nbRead = in.read(buffer);
+                        fileOut.write(buffer, 0, nbRead);
                     }
+
                 } catch (IOException e) {
                     System.out.println("No : Data sent");
                 }
-
                 fileOut.flush();
 
                 fileOut.close();
@@ -196,6 +197,7 @@ public class WebServer {
                 out.println("Server: Bot");
                 out.println("");
             } else {
+
                 out.println("HTTP/1.0 201 Created");
                 out.println(typeOfFile(filename));
                 out.println("Content-length: "+resource.length());
