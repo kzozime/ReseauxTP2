@@ -208,50 +208,64 @@ public class WebServer {
 
     protected void httpPUT(BufferedReader in, PrintWriter out, String filename) {
         System.out.println("PUT " + filename);
-            File resource = new File(filename);
-            boolean existed = resource.exists();
-            if(existed) {
-                resource.delete();
+        File resource = new File(filename);
+        boolean existed = resource.exists();
+        System.out.println(existed);
+
+        if(existed) {
+            resource.delete();
+        }
+        try {
+            resource.createNewFile();
+        }catch (IOException e) {
+            System.out.println("Error : during the process of creating FILE");
+        }
+        try {
+            PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
+
+            // String line ;
+            // System.out.println("debut while");
+            // line= in.readLine();
+            // System.out.println(line);
+            // while (line != null) {
+            //     System.out.println("boucle");
+            //     fileOut.append(line + "\n");
+            //     line= in.readLine();
+            // }
+            
+            //Lecture du body du
+            char[] buffer = new char[256];
+            while(in.ready()) {
+                int nbRead = in.read(buffer);
+                fileOut.write(buffer, 0, nbRead);
             }
-            try {
-                resource.createNewFile();
-            }catch (IOException e) {
-                System.out.println("Error : during the process of creating FILE");
-            }
-            try {
-                PrintWriter fileOut = new PrintWriter(new FileOutputStream(resource, existed));
 
-                String line;
-                try {
-                    while ((line = in.readLine()) != null) {
-                        fileOut.append(line + "\n");
-                    }
-                } catch (IOException e) {
-                    System.out.println("No : Data sent");
-                }
-
-                fileOut.flush();
-
-                fileOut.close();
-            }catch (FileNotFoundException e) {
-                System.out.println("Error : fichier introuvable");
-            }
+            fileOut.flush();
+            fileOut.close();
+        }catch (FileNotFoundException e) {
+            System.out.println("Error : fichier introuvable");
+        }catch (IOException e) {
+            System.out.println("No : Data sent");
+        }
 
 
-            if(existed) {
-                out.println("HTTP/1.0 200 OK");
-                out.println(typeOfFile(filename));
-                out.println("Content-length: "+resource.length());
-                out.println("Server: Bot");
-                out.println("");
-            } else {
-                out.println("HTTP/1.0 201 Created");
-                out.println(typeOfFile(filename));
-                out.println("Content-length: "+resource.length());
-                out.println("Server: Bot");
-                out.println("");
-            }
-            out.flush();
+        if(existed) {
+            out.println("HTTP/1.0 200 OK");
+            out.println(typeOfFile(filename));
+            out.println("Content-length: "+resource.length());
+            out.println("Server: Bot");
+            out.println("");
+        } else {
+            out.println("HTTP/1.0 201 Created");
+            out.println(typeOfFile(filename));
+            out.println("Content-length: "+resource.length());
+            out.println("Server: Bot");
+            out.println("");
+        }
+        out.flush();
+
+        System.out.println("fin de la methode");
+
     }
 
     protected void httpDELETE(PrintWriter out, String filename) {
