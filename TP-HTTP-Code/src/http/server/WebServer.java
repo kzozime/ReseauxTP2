@@ -92,11 +92,11 @@ public class WebServer {
                     System.out.println("head");
                     break;
                 case "PUT":
-                    //httpPUT(in, out, url);
+                    httpPUT(in, out, url);
                     System.out.println("put");
                     break;
                 case "DELETE":
-                    //httpDELETE(out, url);
+                    httpDELETE(out, url);
                     System.out.println("delete"); 
                     break;
                 default :
@@ -187,8 +187,8 @@ public class WebServer {
 
                 fileOut.close();
             } catch (FileNotFoundException e) {
-        System.out.println("Error : fichier introuvable");
-    }
+                System.out.println("Error : fichier introuvable");
+            }
             if(existed) {
                 out.println("HTTP/1.0 200 OK");
                 out.println(typeOfFile(filename));
